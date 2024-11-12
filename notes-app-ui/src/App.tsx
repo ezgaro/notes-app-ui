@@ -74,7 +74,9 @@ function App() {
       setTitle("");
       setContent("");
       setSelectedNote(null);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error updating note:", error);
+    }
   }
 
   function handleCancel() {
@@ -83,11 +85,18 @@ function App() {
     setSelectedNote(null);
   }
 
-  function deleteNote(e: React.MouseEvent, noteId: number) {
+  async function deleteNote(e: React.MouseEvent, noteId: number) {
     //Necessary when dealing with multiple onClick events on a note
     e.stopPropagation();
-    const updatedNotes = notes.filter((note) => noteId !== note.id);
-    setNotes(updatedNotes);
+
+    try {
+      await fetch(`http://localhost:5000/api/notes/${noteId}`, {
+        method: "DELETE",
+      });
+
+      const updatedNotes = notes.filter((note) => noteId !== note.id);
+      setNotes(updatedNotes);
+    } catch (error) {}
   }
 
   return (
