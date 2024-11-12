@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 type Note = {
@@ -8,16 +8,24 @@ type Note = {
 };
 
 function App() {
-  const [notes, setNotes] = useState<Note[]>([
-    { id: 1, title: "note 1", content: "content 1" },
-    { id: 2, title: "note 2", content: "content 2" },
-    { id: 3, title: "note 3", content: "content 3" },
-    { id: 4, title: "note 4", content: "content 4" },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/notes");
+        const notes: Note[] = await response.json();
+        setNotes(notes);
+      } catch (error) {
+        console.error("Error fetching notes:", error);
+      }
+    };
+    fetchNotes();
+  }, []);
 
   function handleNoteClick(note: Note) {
     setSelectedNote(note);
