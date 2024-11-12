@@ -54,5 +54,23 @@ app.put("/api/notes/:id", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Note not found" });
   }
 });
+// @ts-ignore
+app.delete("/api/notes/:id", async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "ID has to be a valid number" });
+  }
+
+  try {
+    const deleteNote = await prisma.note.delete({
+      where: { id },
+    });
+    res.json(deleteNote);
+  } catch (error) {
+    console.error("Error deleting note:", error);
+    res.status(500).json({ error: "Note not found" });
+  }
+});
 
 app.listen(5000, () => console.log("Server is running on port 5000"));
