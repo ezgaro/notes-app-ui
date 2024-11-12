@@ -33,14 +33,22 @@ function App() {
     setContent(note.content);
   }
 
-  function handleAddNote(e: React.FormEvent) {
+  async function handleAddNote(e: React.FormEvent) {
     e.preventDefault();
-    setNotes([
-      ...notes,
-      { id: notes.length + 1, title: title, content: content },
-    ]);
-    setTitle("");
-    setContent("");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content }),
+      });
+      const newNote: Note = await response.json();
+      setNotes([...notes, newNote]);
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      console.error("Error adding note:", error);
+    }
   }
 
   function handleUpdateNote(e: React.FormEvent) {
