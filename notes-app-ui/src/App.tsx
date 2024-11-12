@@ -51,25 +51,30 @@ function App() {
     }
   }
 
-  function handleUpdateNote(e: React.FormEvent) {
+  async function handleUpdateNote(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedNote) {
       return;
     }
 
-    const updateNote: Note = {
-      id: selectedNote.id,
-      title: selectedNote.title,
-      content: selectedNote.content,
-    };
-
-    const updatedNotesList = notes.map((note) =>
-      selectedNote && note.id === selectedNote.id ? updateNote : note
-    );
-    setNotes(updatedNotesList);
-    setTitle("");
-    setContent("");
-    setSelectedNote(null);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/notes/${selectedNote.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, content }),
+        }
+      );
+      const updateNote: Note = await response.json();
+      const updatedNotesList = notes.map((note) =>
+        selectedNote && note.id === selectedNote.id ? updateNote : note
+      );
+      setNotes(updatedNotesList);
+      setTitle("");
+      setContent("");
+      setSelectedNote(null);
+    } catch (error) {}
   }
 
   function handleCancel() {
